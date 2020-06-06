@@ -114,7 +114,7 @@ class OrthMapLayer(nn.Module):
         
 
 class fProjPoolLayer_A(torch.autograd.Function):
-    # AProjPooling  c/n ==0 
+    # AProjPooling  c%n ==0 
     @staticmethod
     def forward(ctx, x, n=4):
         b,c,h,w = x.shape
