@@ -141,7 +141,7 @@ class ProjPoolLayer(nn.Module):
    
    
 class ManifoldNet(nn.Module):
-    def __init__(self, channel, in_datadim, out_datadim, embeddim):
+    def __init__(self, channel, in_datadim, out_datadim, embeddim, fc_in, fc_out):
         super().__init__()
         self.p = embeddim
         self.QR = QRDepLayer()
@@ -149,10 +149,15 @@ class ManifoldNet(nn.Module):
         self.FR = FRMapLayer(channel, in_datadim, out_datadim)
         self.Orth = OrthMapLayer(self.p)
         self.Pool = ProjPoolLayer()
+        self.fc = nn.Linear(fc_in,fc_out)
+        self.softmax = nn.Softmax(1)
     def forward(self,x):
         x=self.FR(x)
         x=self.QR(x)
         x=self.ProjMap(x)
         x= self.Pool(x)
         x=self.Orth(x)
+        x=self.fc(x.reshape(x.shape[0],-1))
+        x=self.softmax(x)
+        # output shape  : batch_size * classnum
         return x
